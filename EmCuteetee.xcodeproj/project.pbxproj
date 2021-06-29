@@ -1,0 +1,390 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */; };
+		D10FB28926887313004DC992 /* EnterDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28826887313004DC992 /* EnterDetailsView.swift */; };
+		D10FB28B26887314004DC992 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28A26887314004DC992 /* Assets.xcassets */; };
+		D10FB28E26887314004DC992 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28D26887314004DC992 /* Preview Assets.xcassets */; };
+		D10FB29726887395004DC992 /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D10FB29626887395004DC992 /* MQTTNIO */; };
+		D10FB299268879AD004DC992 /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB298268879AD004DC992 /* ServerView.swift */; };
+		D10FB29D268894DB004DC992 /* SubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB29C268894DB004DC992 /* SubscribeView.swift */; };
+		D10FB29F2689B395004DC992 /* UnsubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB29E2689B395004DC992 /* UnsubscribeView.swift */; };
+		D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A02689D52E004DC992 /* PublishView.swift */; };
+		D10FB2A5268A0A89004DC992 /* SuggestionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A4268A0A89004DC992 /* SuggestionList.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D10FB28326887313004DC992 /* EmCuteetee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmCuteetee.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmCuTeeTeeApp.swift; sourceTree = "<group>"; };
+		D10FB28826887313004DC992 /* EnterDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterDetailsView.swift; sourceTree = "<group>"; };
+		D10FB28A26887314004DC992 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D10FB28D26887314004DC992 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D10FB28F26887314004DC992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D10FB298268879AD004DC992 /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
+		D10FB29C268894DB004DC992 /* SubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeView.swift; sourceTree = "<group>"; };
+		D10FB29E2689B395004DC992 /* UnsubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsubscribeView.swift; sourceTree = "<group>"; };
+		D10FB2A02689D52E004DC992 /* PublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishView.swift; sourceTree = "<group>"; };
+		D10FB2A22689E0B6004DC992 /* mqtt-nio */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mqtt-nio"; path = "../../macOS/lib/mqtt-nio"; sourceTree = "<group>"; };
+		D10FB2A4268A0A89004DC992 /* SuggestionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionList.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10FB28026887313004DC992 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D10FB29726887395004DC992 /* MQTTNIO in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10FB27A26887313004DC992 = {
+			isa = PBXGroup;
+			children = (
+				D10FB2A22689E0B6004DC992 /* mqtt-nio */,
+				D10FB28526887313004DC992 /* EmCuTeeTee */,
+				D10FB28426887313004DC992 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D10FB28426887313004DC992 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D10FB28326887313004DC992 /* EmCuteetee.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D10FB28526887313004DC992 /* EmCuTeeTee */ = {
+			isa = PBXGroup;
+			children = (
+				D10FB2A3268A09D3004DC992 /* Widgets */,
+				D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */,
+				D10FB28826887313004DC992 /* EnterDetailsView.swift */,
+				D10FB298268879AD004DC992 /* ServerView.swift */,
+				D10FB2A02689D52E004DC992 /* PublishView.swift */,
+				D10FB29C268894DB004DC992 /* SubscribeView.swift */,
+				D10FB29E2689B395004DC992 /* UnsubscribeView.swift */,
+				D10FB28A26887314004DC992 /* Assets.xcassets */,
+				D10FB28F26887314004DC992 /* Info.plist */,
+				D10FB28C26887314004DC992 /* Preview Content */,
+			);
+			path = EmCuTeeTee;
+			sourceTree = "<group>";
+		};
+		D10FB28C26887314004DC992 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				D10FB28D26887314004DC992 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		D10FB2A3268A09D3004DC992 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				D10FB2A4268A0A89004DC992 /* SuggestionList.swift */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D10FB28226887313004DC992 /* EmCuteetee */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10FB29226887314004DC992 /* Build configuration list for PBXNativeTarget "EmCuteetee" */;
+			buildPhases = (
+				D10FB27F26887313004DC992 /* Sources */,
+				D10FB28026887313004DC992 /* Frameworks */,
+				D10FB28126887313004DC992 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EmCuteetee;
+			packageProductDependencies = (
+				D10FB29626887395004DC992 /* MQTTNIO */,
+			);
+			productName = EmCuteetee;
+			productReference = D10FB28326887313004DC992 /* EmCuteetee.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D10FB27B26887313004DC992 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1250;
+				TargetAttributes = {
+					D10FB28226887313004DC992 = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
+				};
+			};
+			buildConfigurationList = D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuteetee" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10FB27A26887313004DC992;
+			packageReferences = (
+				D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */,
+			);
+			productRefGroup = D10FB28426887313004DC992 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D10FB28226887313004DC992 /* EmCuteetee */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D10FB28126887313004DC992 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D10FB28E26887314004DC992 /* Preview Assets.xcassets in Resources */,
+				D10FB28B26887314004DC992 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10FB27F26887313004DC992 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D10FB29F2689B395004DC992 /* UnsubscribeView.swift in Sources */,
+				D10FB29D268894DB004DC992 /* SubscribeView.swift in Sources */,
+				D10FB299268879AD004DC992 /* ServerView.swift in Sources */,
+				D10FB28926887313004DC992 /* EnterDetailsView.swift in Sources */,
+				D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */,
+				D10FB2A5268A0A89004DC992 /* SuggestionList.swift in Sources */,
+				D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D10FB29026887314004DC992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D10FB29126887314004DC992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D10FB29326887314004DC992 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Emcuteetee/Preview Content\"";
+				DEVELOPMENT_TEAM = QJ3Z32MXU8;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/EmCuteetee/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.opticalaberration.EmCuTeeTee;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D10FB29426887314004DC992 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Emcuteetee/Preview Content\"";
+				DEVELOPMENT_TEAM = QJ3Z32MXU8;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/EmCuteetee/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.opticalaberration.EmCuTeeTee;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuteetee" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D10FB29026887314004DC992 /* Debug */,
+				D10FB29126887314004DC992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D10FB29226887314004DC992 /* Build configuration list for PBXNativeTarget "EmCuteetee" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D10FB29326887314004DC992 /* Debug */,
+				D10FB29426887314004DC992 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adam-fowler/mqtt-nio";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D10FB29626887395004DC992 /* MQTTNIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */;
+			productName = MQTTNIO;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D10FB27B26887313004DC992 /* Project object */;
+}
