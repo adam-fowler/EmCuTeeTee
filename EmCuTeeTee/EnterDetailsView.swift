@@ -16,6 +16,7 @@ struct EnterDetailsView: View {
     @State var webSocketUrl: String = "/mqtt"
     @State var tls: Bool = false
     @State var version: MQTTClient.Version = .v3_1_1
+    @State var cleanSession: Bool = false
 
     var body: some View {
         NavigationView {
@@ -93,6 +94,7 @@ struct EnterDetailsView: View {
                     }
                 }
                 Section {
+                    Toggle("Clean Session", isOn: $cleanSession)
                     NavigationLink (
                         destination: ServerView(
                             serverDetails: .init(
@@ -100,6 +102,7 @@ struct EnterDetailsView: View {
                                 hostname: serverName,
                                 port: port,
                                 version: version,
+                                cleanSession: cleanSession,
                                 useTLS: tls,
                                 useWebSocket: webSocket,
                                 webSocketUrl: webSocketUrl

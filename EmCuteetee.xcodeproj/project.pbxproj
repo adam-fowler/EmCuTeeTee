@@ -30,7 +30,6 @@
 		D10FB29C268894DB004DC992 /* SubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeView.swift; sourceTree = "<group>"; };
 		D10FB29E2689B395004DC992 /* UnsubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsubscribeView.swift; sourceTree = "<group>"; };
 		D10FB2A02689D52E004DC992 /* PublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishView.swift; sourceTree = "<group>"; };
-		D10FB2A22689E0B6004DC992 /* mqtt-nio */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mqtt-nio"; path = "../../macOS/lib/mqtt-nio"; sourceTree = "<group>"; };
 		D10FB2A4268A0A89004DC992 /* SuggestionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -49,7 +48,6 @@
 		D10FB27A26887313004DC992 = {
 			isa = PBXGroup;
 			children = (
-				D10FB2A22689E0B6004DC992 /* mqtt-nio */,
 				D10FB28526887313004DC992 /* EmCuTeeTee */,
 				D10FB28426887313004DC992 /* Products */,
 			);

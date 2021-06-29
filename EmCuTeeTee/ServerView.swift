@@ -69,24 +69,7 @@ struct ServerView: View {
         }
         .navigationBarTitle(Text(self.serverDetails.hostname))
         .onAppear {
-            client.create(details: self.serverDetails) { result in
-                switch result {
-                case .success(let value):
-                    let string = String(buffer: value.payload)
-                    var output: String
-                    if string.count > Self.maxPayloadLength {
-                        output = string.prefix(Self.maxPayloadLength) + "..."
-                    } else {
-                        output = string
-                    }
-                    receivedMessages.append("\(value.topicName):\n\(output)")
-                case .failure:
-                    break
-                }
-                if receivedMessages.count > Self.maxNumMessages {
-                    receivedMessages.removeFirst()
-                }
-            }
+            self.createClient()
             self.connect()
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 DispatchQueue.main.async {
@@ -183,18 +166,41 @@ struct ServerView: View {
         }
     }
 
-    func connect() {
-        self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
-            DispatchQueue.main.async {
-                addMessage("Connection closed")
-                addMessage("Reconnecting...")
-                self.connect()
+    /// create MQTT client
+    func createClient() {
+        client.create(details: self.serverDetails) { result in
+            switch result {
+            case .success(let value):
+                let string = String(buffer: value.payload)
+                var output: String
+                if string.count > Self.maxPayloadLength {
+                    output = string.prefix(Self.maxPayloadLength) + "..."
+                } else {
+                    output = string
+                }
+                receivedMessages.append("\(value.topicName):\n\(output)")
+            case .failure:
+                break
+            }
+            if receivedMessages.count > Self.maxNumMessages {
+                receivedMessages.removeFirst()
             }
         }
-        self.client.client?.connect(cleanSession: false).whenComplete { result in
+    }
+    
+    /// connect to MQTT server
+    func connect() {
+        self.client.client?.connect(cleanSession: serverDetails.cleanSession).whenComplete { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
+                    self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
+                        DispatchQueue.main.async {
+                            addMessage("Connection closed")
+                            addMessage("Reconnecting...")
+                            self.connect()
+                        }
+                    }
                     addMessage("Connection successful")
                 case .failure(let error):
                     addMessage("Failed to connect\n\(error)")
@@ -214,6 +220,7 @@ struct ServerView: View {
         let hostname: String
         let port: Int
         let version: MQTTClient.Version
+        let cleanSession: Bool
         let useTLS: Bool
         let useWebSocket: Bool
         let webSocketUrl: String
@@ -273,6 +280,7 @@ struct ServerView_Previews: PreviewProvider {
                 hostname: "localhost",
                 port: 1883,
                 version: .v3_1_1,
+                cleanSession: true,
                 useTLS: false,
                 useWebSocket: false,
                 webSocketUrl: "/mqtt"
