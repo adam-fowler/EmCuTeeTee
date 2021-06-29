@@ -73,7 +73,7 @@ struct ServerView: View {
             self.connect()
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 DispatchQueue.main.async {
-                    self.updateList()
+                    self.updateMessageList()
                 }
             }
         }
@@ -93,9 +93,9 @@ struct ServerView: View {
                 self.client.client?.subscribe(to: [MQTTSubscribeInfo(topicFilter: subscribeTopic, qos: MQTTQoS.exactlyOnce)]).whenComplete { result in
                     switch result {
                     case .success:
-                        self.receivedMessages.append("Subscribed to \(subscribeTopic)")
+                        self.addMessage("Subscribed to \(subscribeTopic)")
                     case .failure(let error):
-                        self.receivedMessages.append("Failed to subscribe to \(subscribeTopic)\nError: \(error)")
+                        self.addMessage("Failed to subscribe to \(subscribeTopic)\nError: \(error)")
                     }
                 }
             }
@@ -111,9 +111,9 @@ struct ServerView: View {
                 self.client.client?.unsubscribe(from: [unsubscribeTopic]).whenComplete { result in
                     switch result {
                     case .success:
-                        self.receivedMessages.append("Unsubscribed from \(unsubscribeTopic)")
+                        self.addMessage("Unsubscribed from \(unsubscribeTopic)")
                     case .failure(let error):
-                        self.receivedMessages.append("Failed to unsubscribe from \(unsubscribeTopic)\nError: \(error)")
+                        self.addMessage("Failed to unsubscribe from \(unsubscribeTopic)\nError: \(error)")
                     }
                 }
             }
@@ -140,9 +140,9 @@ struct ServerView: View {
                 ).whenComplete { result in
                     switch result {
                     case .success:
-                        self.receivedMessages.append("Published to \(publishTopic)")
+                        self.addMessage("Published to \(publishTopic)")
                     case .failure(let error):
-                        self.receivedMessages.append("Failed to publish to \(publishTopic)\nError: \(error)")
+                        self.addMessage("Failed to publish to \(publishTopic)\nError: \(error)")
                     }
                 }
             }
@@ -151,18 +151,21 @@ struct ServerView: View {
 
     /// Update list of messages. Call this every at a set interval instead of updating messages
     /// every time a new message comes in.
-    func updateList() {
+    func updateMessageList() {
         guard showPublish == false, showSubscribe == false, showUnsubscribe == false else { return }
         while let message = receivedMessages.popFirst() {
-            addMessage(message)
+            self.currentId += 1
+            messages.append(.init(text: message, id: self.currentId))
+            if messages.count > Self.maxNumMessages {
+                messages.removeFirst()
+            }
         }
     }
 
-    func addMessage(_ text: String) {
-        self.currentId += 1
-        messages.append(.init(text: text, id: self.currentId))
-        if messages.count > Self.maxNumMessages {
-            messages.removeFirst()
+    func addMessage(_ text: String, now: Bool = false) {
+        self.receivedMessages.append(text)
+        if now {
+            updateMessageList()
         }
     }
 
