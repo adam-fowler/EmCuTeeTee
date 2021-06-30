@@ -17,7 +17,6 @@
 		D10FB29F2689B395004DC992 /* UnsubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB29E2689B395004DC992 /* UnsubscribeView.swift */; };
 		D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A02689D52E004DC992 /* PublishView.swift */; };
 		D10FB2A5268A0A89004DC992 /* SuggestionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A4268A0A89004DC992 /* SuggestionList.swift */; };
-		D10FB2A7268C5C9B004DC992 /* UserDefaultProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A6268C5C9B004DC992 /* UserDefaultProperties.swift */; };
 		D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A8268C5CEE004DC992 /* UserSettings.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +32,6 @@
 		D10FB29E2689B395004DC992 /* UnsubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsubscribeView.swift; sourceTree = "<group>"; };
 		D10FB2A02689D52E004DC992 /* PublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishView.swift; sourceTree = "<group>"; };
 		D10FB2A4268A0A89004DC992 /* SuggestionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionList.swift; sourceTree = "<group>"; };
-		D10FB2A6268C5C9B004DC992 /* UserDefaultProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultProperties.swift; sourceTree = "<group>"; };
 		D10FB2A8268C5CEE004DC992 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,11 +73,10 @@
 				D10FB2A02689D52E004DC992 /* PublishView.swift */,
 				D10FB29C268894DB004DC992 /* SubscribeView.swift */,
 				D10FB29E2689B395004DC992 /* UnsubscribeView.swift */,
-				D10FB2A6268C5C9B004DC992 /* UserDefaultProperties.swift */,
+				D10FB2A8268C5CEE004DC992 /* UserSettings.swift */,
 				D10FB28A26887314004DC992 /* Assets.xcassets */,
 				D10FB28F26887314004DC992 /* Info.plist */,
 				D10FB28C26887314004DC992 /* Preview Content */,
-				D10FB2A8268C5CEE004DC992 /* UserSettings.swift */,
 			);
 			path = EmCuTeeTee;
 			sourceTree = "<group>";
@@ -183,7 +180,6 @@
 				D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */,
 				D10FB2A5268A0A89004DC992 /* SuggestionList.swift in Sources */,
 				D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */,
-				D10FB2A7268C5C9B004DC992 /* UserDefaultProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,19 +11,10 @@ import SwiftUI
 struct EnterDetailsView: View {
     @EnvironmentObject var settings: UserSettings
 
-    //@State var clientIdentifier: String = ""
-    //@State var serverName: String = ""
-    //@State var port: Int = 1883
-    //@State var webSocket: Bool = false
-    //@State var webSocketUrl: String = "/mqtt"
-    //@State var tls: Bool = false
-    //@State var version: MQTTClient.Version = .v3_1_1
-    //@State var cleanSession: Bool = false
-
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Enter server details")) {
+                Section() {
                     HStack {
                         Text("Identifier")
                         TextField(
@@ -116,6 +107,7 @@ struct EnterDetailsView: View {
                     .disabled(settings.hostname.count == 0)
                 }
             }
+            .navigationBarTitle(Text("MQTT server details"))
         }
     }
 
