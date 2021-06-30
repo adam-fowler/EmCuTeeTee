@@ -22,6 +22,7 @@ struct PublishView: View {
             HStack {
                 Text("Topic name")
                 TextField("Enter topic name", text: $topicName)
+                    .textFieldStyle(BasicTextFieldStyle())
             }
             Text("Payload")
             TextEditor(text: $payload)

@@ -21,16 +21,12 @@ struct ServerDetailsView: View {
                             "Enter client identifier",
                             text: $settings.clientIdentifier
                         )
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
+                        .textFieldStyle(BasicTextFieldStyle())
                     }
                     HStack {
                         Text("Host")
                         TextField("Enter server name", text: $settings.hostname)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
+                            .textFieldStyle(BasicTextFieldStyle())
                     }
                     let portBinding = Binding<String>(
                         get: { String(self.$settings.port.wrappedValue) },
@@ -43,8 +39,8 @@ struct ServerDetailsView: View {
                     HStack {
                         Text("Port")
                         TextField("Port", text: portBinding)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.numberPad)
+                            .textFieldStyle(BasicTextFieldStyle())
+                            .keyboardType(.numberPad)
                     }
                     let versionBinding = Binding<Int>(
                         get: {
@@ -80,9 +76,7 @@ struct ServerDetailsView: View {
                         HStack {
                             Text("WebSocket URL")
                             TextField("Enter URL", text: $settings.webSocketURL)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .autocapitalization(.none)
-                                .disableAutocorrection(true)
+                                .textFieldStyle(BasicTextFieldStyle())
                         }
                     }
                 }

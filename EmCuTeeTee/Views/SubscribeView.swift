@@ -19,6 +19,7 @@ struct SubscribeView: View {
             HStack {
                 Text("Topic filter")
                 TextField("Enter topic filter", text: $topicName)
+                    .textFieldStyle(BasicTextFieldStyle())
             }
             HStack {
                 Button("Cancel") {
