@@ -20,14 +20,25 @@ struct TextFieldSuggestionList: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             TextField(label, text: $text)
-            ForEach(getSuggestionList(text), id: \.self) { text in
-                Button(text) {
-                    self.text = text
+            let suggestionList = getSuggestionList(text)
+            if suggestionList.count > 0 {
+                VStack {
+                    ForEach(suggestionList, id: \.self) { text in
+                        Button(action: {
+                            self.text = text
+                        }) {
+                            Text(text)
+                            Spacer()
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        .frame(alignment: .leading)
+                    }
                 }
-                .buttonStyle(BorderlessButtonStyle())
-                .frame(alignment: .leading)
+                .frame(maxWidth: .infinity)
+                .padding(8)
+                .border(Color.gray)
             }
         }
     }
