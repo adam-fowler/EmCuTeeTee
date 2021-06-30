@@ -70,7 +70,7 @@ struct ServerView: View {
         .navigationBarTitle(Text(self.serverDetails.hostname))
         .onAppear {
             self.createClient()
-            self.connect()
+            self.connect(cleanSession: serverDetails.cleanSession)
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 DispatchQueue.main.async {
                     self.updateMessageList()
@@ -192,8 +192,8 @@ struct ServerView: View {
     }
     
     /// connect to MQTT server
-    func connect() {
-        self.client.client?.connect(cleanSession: serverDetails.cleanSession).whenComplete { result in
+    func connect(cleanSession: Bool) {
+        self.client.client?.connect(cleanSession: cleanSession).whenComplete { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
@@ -201,7 +201,7 @@ struct ServerView: View {
                         DispatchQueue.main.async {
                             addMessage("Connection closed")
                             addMessage("Reconnecting...")
-                            self.connect()
+                            self.connect(cleanSession: false)
                         }
                     }
                     addMessage("Connection successful")
