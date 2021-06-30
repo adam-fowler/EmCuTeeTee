@@ -13,7 +13,7 @@ struct EmCuTeeTeeApp: App {
     
     var body: some Scene {
         WindowGroup {
-            EnterDetailsView()
+            ServerDetailsView()
                 .environmentObject(settings)
         }
     }

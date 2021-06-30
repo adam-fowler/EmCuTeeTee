@@ -8,7 +8,7 @@
 import MQTTNIO
 import SwiftUI
 
-struct EnterDetailsView: View {
+struct ServerDetailsView: View {
     @EnvironmentObject var settings: UserSettings
 
     var body: some View {

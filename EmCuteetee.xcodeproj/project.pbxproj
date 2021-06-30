@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */; };
-		D10FB28926887313004DC992 /* EnterDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28826887313004DC992 /* EnterDetailsView.swift */; };
+		D10FB28926887313004DC992 /* ServerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28826887313004DC992 /* ServerDetailsView.swift */; };
 		D10FB28B26887314004DC992 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28A26887314004DC992 /* Assets.xcassets */; };
 		D10FB28E26887314004DC992 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28D26887314004DC992 /* Preview Assets.xcassets */; };
 		D10FB29726887395004DC992 /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D10FB29626887395004DC992 /* MQTTNIO */; };
@@ -23,7 +23,7 @@
 /* Begin PBXFileReference section */
 		D10FB28326887313004DC992 /* EmCuteetee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmCuteetee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmCuTeeTeeApp.swift; sourceTree = "<group>"; };
-		D10FB28826887313004DC992 /* EnterDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterDetailsView.swift; sourceTree = "<group>"; };
+		D10FB28826887313004DC992 /* ServerDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailsView.swift; sourceTree = "<group>"; };
 		D10FB28A26887314004DC992 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D10FB28D26887314004DC992 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D10FB28F26887314004DC992 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -66,13 +66,9 @@
 		D10FB28526887313004DC992 /* EmCuTeeTee */ = {
 			isa = PBXGroup;
 			children = (
+				D10FB2AA268C6941004DC992 /* Views */,
 				D10FB2A3268A09D3004DC992 /* Widgets */,
 				D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */,
-				D10FB28826887313004DC992 /* EnterDetailsView.swift */,
-				D10FB298268879AD004DC992 /* ServerView.swift */,
-				D10FB2A02689D52E004DC992 /* PublishView.swift */,
-				D10FB29C268894DB004DC992 /* SubscribeView.swift */,
-				D10FB29E2689B395004DC992 /* UnsubscribeView.swift */,
 				D10FB2A8268C5CEE004DC992 /* UserSettings.swift */,
 				D10FB28A26887314004DC992 /* Assets.xcassets */,
 				D10FB28F26887314004DC992 /* Info.plist */,
@@ -95,6 +91,18 @@
 				D10FB2A4268A0A89004DC992 /* SuggestionList.swift */,
 			);
 			path = Widgets;
+			sourceTree = "<group>";
+		};
+		D10FB2AA268C6941004DC992 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D10FB28826887313004DC992 /* ServerDetailsView.swift */,
+				D10FB298268879AD004DC992 /* ServerView.swift */,
+				D10FB2A02689D52E004DC992 /* PublishView.swift */,
+				D10FB29C268894DB004DC992 /* SubscribeView.swift */,
+				D10FB29E2689B395004DC992 /* UnsubscribeView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,7 +184,7 @@
 				D10FB29D268894DB004DC992 /* SubscribeView.swift in Sources */,
 				D10FB299268879AD004DC992 /* ServerView.swift in Sources */,
 				D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */,
-				D10FB28926887313004DC992 /* EnterDetailsView.swift in Sources */,
+				D10FB28926887313004DC992 /* ServerDetailsView.swift in Sources */,
 				D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */,
 				D10FB2A5268A0A89004DC992 /* SuggestionList.swift in Sources */,
 				D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */,
