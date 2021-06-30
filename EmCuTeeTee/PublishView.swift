@@ -1,6 +1,6 @@
 //
 //  PublishView.swift
-//  MQTTClient
+//  EmCuTeeTee
 //
 //  Created by Adam Fowler on 27/06/2021.
 //

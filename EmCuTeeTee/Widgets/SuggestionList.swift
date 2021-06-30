@@ -1,6 +1,6 @@
 //
 //  SuggestionList.swift
-//  MQTTClient
+//  EmCuTeeTee
 //
 //  Created by Adam Fowler on 28/06/2021.
 //

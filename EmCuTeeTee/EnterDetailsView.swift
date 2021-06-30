@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  MQTTClient
+//  EmCuTeeTee
 //
 //  Created by Adam Fowler on 27/06/2021.
 //
@@ -9,14 +9,16 @@ import MQTTNIO
 import SwiftUI
 
 struct EnterDetailsView: View {
-    @State var clientIdentifier: String = ""
-    @State var serverName: String = "test.mosquitto.org"
-    @State var port: Int = 1883
-    @State var webSocket: Bool = false
-    @State var webSocketUrl: String = "/mqtt"
-    @State var tls: Bool = false
-    @State var version: MQTTClient.Version = .v3_1_1
-    @State var cleanSession: Bool = false
+    @EnvironmentObject var settings: UserSettings
+
+    //@State var clientIdentifier: String = ""
+    //@State var serverName: String = ""
+    //@State var port: Int = 1883
+    //@State var webSocket: Bool = false
+    //@State var webSocketUrl: String = "/mqtt"
+    //@State var tls: Bool = false
+    //@State var version: MQTTClient.Version = .v3_1_1
+    //@State var cleanSession: Bool = false
 
     var body: some View {
         NavigationView {
@@ -26,7 +28,7 @@ struct EnterDetailsView: View {
                         Text("Identifier")
                         TextField(
                             "Enter client identifier",
-                            text: $clientIdentifier
+                            text: $settings.clientIdentifier
                         )
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .autocapitalization(.none)
@@ -34,16 +36,16 @@ struct EnterDetailsView: View {
                     }
                     HStack {
                         Text("Host")
-                        TextField("Enter server name", text: $serverName)
+                        TextField("Enter server name", text: $settings.hostname)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
                     }
                     let portBinding = Binding<String>(
-                        get: { String(self.$port.wrappedValue) },
+                        get: { String(self.$settings.port.wrappedValue) },
                         set: {
                             if let value = NumberFormatter().number(from: $0) {
-                                self.$port.wrappedValue = value.intValue
+                                self.$settings.port.wrappedValue = value.intValue
                             }
                         }
                     )
@@ -55,7 +57,7 @@ struct EnterDetailsView: View {
                     }
                     let versionBinding = Binding<Int>(
                         get: {
-                            switch self.version {
+                            switch self.settings.version {
                             case .v3_1_1:
                                 return 0
                             case .v5_0:
@@ -65,9 +67,9 @@ struct EnterDetailsView: View {
                         set: {
                             switch $0 {
                             case 0:
-                                self.version = .v3_1_1
+                                self.settings.version = .v3_1_1
                             case 1:
-                                self.version = .v5_0
+                                self.settings.version = .v5_0
                             default:
                                 break
                             }
@@ -81,12 +83,12 @@ struct EnterDetailsView: View {
                             Text("5.0").tag(1)
                         }
                     ).pickerStyle(SegmentedPickerStyle())
-                    Toggle("TLS", isOn: $tls)
-                    Toggle("WebSocket", isOn: $webSocket)
-                    if webSocket {
+                    Toggle("TLS", isOn: $settings.useTLS)
+                    Toggle("WebSocket", isOn: $settings.useWebSocket)
+                    if settings.useWebSocket {
                         HStack {
                             Text("WebSocket URL")
-                            TextField("Enter URL", text: $webSocketUrl)
+                            TextField("Enter URL", text: $settings.webSocketURL)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
@@ -94,24 +96,24 @@ struct EnterDetailsView: View {
                     }
                 }
                 Section {
-                    Toggle("Clean Session", isOn: $cleanSession)
+                    Toggle("Clean Session", isOn: $settings.cleanSession)
                     NavigationLink (
                         destination: ServerView(
                             serverDetails: .init(
-                                identifier: clientIdentifier,
-                                hostname: serverName,
-                                port: port,
-                                version: version,
-                                cleanSession: cleanSession,
-                                useTLS: tls,
-                                useWebSocket: webSocket,
-                                webSocketUrl: webSocketUrl
+                                identifier: settings.clientIdentifier,
+                                hostname: settings.hostname,
+                                port: settings.port,
+                                version: settings.version,
+                                cleanSession: settings.cleanSession,
+                                useTLS: settings.useTLS,
+                                useWebSocket: settings.useWebSocket,
+                                webSocketUrl: settings.webSocketURL
                             )
                         )
                     ) {
                         Text("Connect")
                     }
-                    .disabled(serverName.count == 0)
+                    .disabled(settings.hostname.count == 0)
                 }
             }
         }
