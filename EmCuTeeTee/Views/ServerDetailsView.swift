@@ -120,6 +120,6 @@ struct ServerDetailsView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        EnterDetailsView()
+        ServerDetailsView()
     }
 }
