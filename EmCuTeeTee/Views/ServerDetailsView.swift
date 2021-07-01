@@ -71,7 +71,9 @@ struct ServerDetailsView: View {
                             Text("5.0").tag(1)
                         }
                     ).pickerStyle(SegmentedPickerStyle())
+                    #if DEBUG // don't release with TLS to avoid US export laws
                     Toggle("TLS", isOn: $settings.useTLS)
+                    #endif
                     Toggle("WebSocket", isOn: $settings.useWebSocket)
                     if settings.useWebSocket {
                         HStack {

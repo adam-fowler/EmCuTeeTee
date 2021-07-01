@@ -50,7 +50,6 @@ class UserSettings: ObservableObject {
         UserDefaults.standard.register(defaults: [
             "port": 1883,
             "version": 0,
-            "useTLS": false,
             "useWebSocket": false,
             "authentication": false,
             "cleanSession": true
@@ -65,7 +64,11 @@ class UserSettings: ObservableObject {
         default:
             self.version = .v3_1_1
         }
+        #if DEBUG // don't release with TLS to avoid US export laws
         self.useTLS = UserDefaults.standard.bool(forKey: "useTLS")
+        #else
+        self.useTLS = false
+        #endif
         self.useWebSocket = UserDefaults.standard.bool(forKey: "useWebSocket")
         self.webSocketURL = UserDefaults.standard.string(forKey: "webSocketURL") ?? "/mqtt"
         self.authentication = UserDefaults.standard.bool(forKey: "authentication")
