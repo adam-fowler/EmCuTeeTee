@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ServerDetailsView: View {
     @EnvironmentObject var settings: UserSettings
+    @State var password: String = ""
 
     var body: some View {
         NavigationView {
@@ -81,6 +82,21 @@ struct ServerDetailsView: View {
                     }
                 }
                 Section {
+                    Toggle("Authentication", isOn: $settings.authentication)
+                    if settings.authentication {
+                        HStack {
+                            Text("Username")
+                            TextField("Enter username", text: $settings.username)
+                                .textFieldStyle(BasicTextFieldStyle())
+                        }
+                        HStack {
+                            Text("Password")
+                            SecureField("Enter password", text: $password)
+                                .textFieldStyle(BasicTextFieldStyle())
+                        }
+                    }
+                }
+                Section {
                     Toggle("Clean Session", isOn: $settings.cleanSession)
                     NavigationLink (
                         destination: ServerView(
@@ -92,7 +108,9 @@ struct ServerDetailsView: View {
                                 cleanSession: settings.cleanSession,
                                 useTLS: settings.useTLS,
                                 useWebSocket: settings.useWebSocket,
-                                webSocketUrl: settings.webSocketURL
+                                webSocketUrl: settings.webSocketURL,
+                                username: settings.authentication ? settings.username : nil,
+                                password: settings.authentication ? password : nil
                             )
                         )
                     ) {
@@ -115,5 +133,6 @@ struct ServerDetailsView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ServerDetailsView()
+            .environmentObject(UserSettings())
     }
 }

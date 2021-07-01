@@ -227,6 +227,8 @@ struct ServerView: View {
         let useTLS: Bool
         let useWebSocket: Bool
         let webSocketUrl: String
+        let username: String?
+        let password: String?
     }
 
     class Client {
@@ -249,6 +251,8 @@ struct ServerView: View {
         ) {
             let config = MQTTClient.Configuration(
                 version: details.version,
+                userName: details.username,
+                password: details.password,
                 useSSL: details.useTLS,
                 useWebSockets: details.useWebSocket,
                 webSocketURLPath: details.webSocketUrl
@@ -286,7 +290,9 @@ struct ServerView_Previews: PreviewProvider {
                 cleanSession: true,
                 useTLS: false,
                 useWebSocket: false,
-                webSocketUrl: "/mqtt"
+                webSocketUrl: "/mqtt",
+                username: nil,
+                password: nil
             )
         )
     }

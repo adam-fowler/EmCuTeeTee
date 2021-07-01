@@ -36,6 +36,12 @@ class UserSettings: ObservableObject {
     @Published var webSocketURL: String {
         didSet { UserDefaults.standard.set(self.webSocketURL, forKey: "webSocketURL") }
     }
+    @Published var authentication: Bool {
+        didSet { UserDefaults.standard.set(self.authentication, forKey: "authentication") }
+    }
+    @Published var username: String {
+        didSet { UserDefaults.standard.set(self.username, forKey: "username") }
+    }
     @Published var cleanSession: Bool {
         didSet { UserDefaults.standard.set(self.cleanSession, forKey: "cleanSession") }
     }
@@ -46,6 +52,7 @@ class UserSettings: ObservableObject {
             "version": 0,
             "useTLS": false,
             "useWebSocket": false,
+            "authentication": false,
             "cleanSession": true
         ])
 
@@ -61,6 +68,8 @@ class UserSettings: ObservableObject {
         self.useTLS = UserDefaults.standard.bool(forKey: "useTLS")
         self.useWebSocket = UserDefaults.standard.bool(forKey: "useWebSocket")
         self.webSocketURL = UserDefaults.standard.string(forKey: "webSocketURL") ?? "/mqtt"
+        self.authentication = UserDefaults.standard.bool(forKey: "authentication")
+        self.username = UserDefaults.standard.string(forKey: "username") ?? ""
         self.cleanSession = UserDefaults.standard.bool(forKey: "cleanSession")
     }
 }
