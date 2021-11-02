@@ -90,11 +90,11 @@ struct ServerView: View {
         }
         .sheet(isPresented: $showSubscribe) {
             SubscribeView(showView: $showSubscribe, topicName: $subscribeTopic) {
-                self.client.client?.subscribe(to: [MQTTSubscribeInfo(topicFilter: subscribeTopic, qos: MQTTQoS.exactlyOnce)]).whenComplete { result in
-                    switch result {
-                    case .success:
+                Task {
+                    do {
+                        _ = try await self.client.client?.subscribe(to: [MQTTSubscribeInfo(topicFilter: subscribeTopic, qos: MQTTQoS.exactlyOnce)])
                         self.receivedMessages.append("Subscribed to \(subscribeTopic)")
-                    case .failure(let error):
+                    } catch {
                         self.receivedMessages.append("Failed to subscribe to \(subscribeTopic)\nError: \(error)")
                     }
                 }
@@ -108,11 +108,11 @@ struct ServerView: View {
         }
         .sheet(isPresented: $showUnsubscribe) {
             UnsubscribeView(showView: $showUnsubscribe, topicName: $unsubscribeTopic) {
-                self.client.client?.unsubscribe(from: [unsubscribeTopic]).whenComplete { result in
-                    switch result {
-                    case .success:
+                Task {
+                    do {
+                        _ = try await self.client.client?.unsubscribe(from: [unsubscribeTopic])
                         self.receivedMessages.append("Unsubscribed from \(unsubscribeTopic)")
-                    case .failure(let error):
+                    } catch {
                         self.receivedMessages.append("Failed to unsubscribe from \(unsubscribeTopic)\nError: \(error)")
                     }
                 }
@@ -132,16 +132,16 @@ struct ServerView: View {
                 qos: $publishQoS,
                 retain: $publishRetain
             ) {
-                self.client.client?.publish(
-                    to: publishTopic,
-                    payload: ByteBufferAllocator().buffer(string: publishPayload),
-                    qos: .init(rawValue: UInt8(publishQoS))!,
-                    retain: publishRetain
-                ).whenComplete { result in
-                    switch result {
-                    case .success:
+                Task {
+                    do {
+                        _ = try await self.client.client?.publish(
+                            to: publishTopic,
+                            payload: ByteBufferAllocator().buffer(string: publishPayload),
+                            qos: .init(rawValue: UInt8(publishQoS))!,
+                            retain: publishRetain
+                        )
                         self.receivedMessages.append("Published to \(publishTopic)")
-                    case .failure(let error):
+                    } catch {
                         self.receivedMessages.append("Failed to publish to \(publishTopic)\nError: \(error)")
                     }
                 }
@@ -190,10 +190,10 @@ struct ServerView: View {
     
     /// connect to MQTT server
     func connect() {
-        self.client.client?.connect(cleanSession: serverDetails.cleanSession).whenComplete { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
+        Task {
+            do {
+                _ = try await self.client.client?.connect(cleanSession: serverDetails.cleanSession)
+                DispatchQueue.main.async {
                     self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
                         DispatchQueue.main.async {
                             addMessage("Connection closed")
@@ -202,7 +202,9 @@ struct ServerView: View {
                         }
                     }
                     addMessage("Connection successful")
-                case .failure(let error):
+                }
+            } catch {
+                DispatchQueue.main.async {
                     addMessage("Failed to connect\n\(error)")
                 }
             }
@@ -264,8 +266,9 @@ struct ServerView: View {
         }
 
         func destroy() {
-            self.client?.disconnect().whenComplete { _ in
-                try? self.client?.syncShutdownGracefully()
+            Task {
+                try? await self.client?.disconnect()
+                try? await self.client?.shutdown()
                 self.client = nil
             }
         }
