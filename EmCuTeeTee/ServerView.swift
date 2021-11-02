@@ -37,7 +37,7 @@ struct ServerView: View {
     @State var publishQoS: Int = 1
     @State var publishRetain: Bool = false
 
-    @State var timer: Timer? = nil
+    //@State var timer: Timer? = nil
 
     var body: some View {
         NavigationView {
@@ -70,16 +70,24 @@ struct ServerView: View {
         .navigationBarTitle(Text(self.serverDetails.hostname))
         .onAppear {
             self.createClient()
-            self.connect()
-            self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                DispatchQueue.main.async {
-                    self.updateList()
+            Task {
+                await self.connect()
+            }
+        }
+        .task {
+            var cancelled = false
+            while !cancelled {
+                do  {
+                    try await Task.sleep(nanoseconds: 500_000_000)
+                } catch {
+                    cancelled = true
                 }
+                self.updateList()
             }
         }
         .onDisappear {
-            self.timer?.invalidate()
-            self.timer = nil
+            //self.timer?.invalidate()
+            //self.timer = nil
             self.client.destroy()
         }
     }
@@ -93,9 +101,9 @@ struct ServerView: View {
                 Task {
                     do {
                         _ = try await self.client.client?.subscribe(to: [MQTTSubscribeInfo(topicFilter: subscribeTopic, qos: MQTTQoS.exactlyOnce)])
-                        self.receivedMessages.append("Subscribed to \(subscribeTopic)")
+                        self.addReceivedMessage("Subscribed to \(subscribeTopic)")
                     } catch {
-                        self.receivedMessages.append("Failed to subscribe to \(subscribeTopic)\nError: \(error)")
+                        self.addReceivedMessage("Failed to subscribe to \(subscribeTopic)\nError: \(error)")
                     }
                 }
             }
@@ -111,9 +119,9 @@ struct ServerView: View {
                 Task {
                     do {
                         _ = try await self.client.client?.unsubscribe(from: [unsubscribeTopic])
-                        self.receivedMessages.append("Unsubscribed from \(unsubscribeTopic)")
+                        self.addReceivedMessage("Unsubscribed from \(unsubscribeTopic)")
                     } catch {
-                        self.receivedMessages.append("Failed to unsubscribe from \(unsubscribeTopic)\nError: \(error)")
+                        self.addReceivedMessage("Failed to unsubscribe from \(unsubscribeTopic)\nError: \(error)")
                     }
                 }
             }
@@ -140,9 +148,9 @@ struct ServerView: View {
                             qos: .init(rawValue: UInt8(publishQoS))!,
                             retain: publishRetain
                         )
-                        self.receivedMessages.append("Published to \(publishTopic)")
+                        self.addReceivedMessage("Published to \(publishTopic)")
                     } catch {
-                        self.receivedMessages.append("Failed to publish to \(publishTopic)\nError: \(error)")
+                        self.addReceivedMessage("Failed to publish to \(publishTopic)\nError: \(error)")
                     }
                 }
             }
@@ -155,6 +163,13 @@ struct ServerView: View {
         guard showPublish == false, showSubscribe == false, showUnsubscribe == false else { return }
         while let message = receivedMessages.popFirst() {
             addMessage(message)
+        }
+    }
+
+    func addReceivedMessage(_ text: String) {
+        receivedMessages.append(text)
+        if receivedMessages.count > Self.maxNumMessages {
+            receivedMessages.removeFirst()
         }
     }
 
@@ -178,36 +193,27 @@ struct ServerView: View {
                 } else {
                     output = string
                 }
-                receivedMessages.append("\(value.topicName):\n\(output)")
+                addReceivedMessage("\(value.topicName):\n\(output)")
             case .failure:
                 break
-            }
-            if receivedMessages.count > Self.maxNumMessages {
-                receivedMessages.removeFirst()
             }
         }
     }
     
     /// connect to MQTT server
-    func connect() {
-        Task {
-            do {
-                _ = try await self.client.client?.connect(cleanSession: serverDetails.cleanSession)
-                DispatchQueue.main.async {
-                    self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
-                        DispatchQueue.main.async {
-                            addMessage("Connection closed")
-                            addMessage("Reconnecting...")
-                            self.connect()
-                        }
-                    }
-                    addMessage("Connection successful")
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    addMessage("Failed to connect\n\(error)")
+    func connect() async {
+        do {
+            _ = try await self.client.client?.connect(cleanSession: serverDetails.cleanSession)
+            self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
+                addMessage("Connection closed")
+                addMessage("Reconnecting...")
+                Task {
+                    await self.connect()
                 }
             }
+            addMessage("Connection successful")
+        } catch {
+            addMessage("Failed to connect\n\(error)")
         }
     }
 
