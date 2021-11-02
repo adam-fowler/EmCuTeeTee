@@ -11,6 +11,7 @@ import NIO
 import NIOTransportServices
 import SwiftUI
 
+@MainActor
 struct ServerView: View {
     static let maxPayloadLength = 256
     static let maxNumMessages = 50
@@ -184,18 +185,20 @@ struct ServerView: View {
     /// create MQTT client
     func createClient() {
         client.create(details: self.serverDetails) { result in
-            switch result {
-            case .success(let value):
-                let string = String(buffer: value.payload)
-                var output: String
-                if string.count > Self.maxPayloadLength {
-                    output = string.prefix(Self.maxPayloadLength) + "..."
-                } else {
-                    output = string
+            Task {
+                switch result {
+                case .success(let value):
+                    let string = String(buffer: value.payload)
+                    var output: String
+                    if string.count > Self.maxPayloadLength {
+                        output = string.prefix(Self.maxPayloadLength) + "..."
+                    } else {
+                        output = string
+                    }
+                    addReceivedMessage("\(value.topicName):\n\(output)")
+                case .failure:
+                    break
                 }
-                addReceivedMessage("\(value.topicName):\n\(output)")
-            case .failure:
-                break
             }
         }
     }
@@ -205,9 +208,9 @@ struct ServerView: View {
         do {
             _ = try await self.client.client?.connect(cleanSession: serverDetails.cleanSession)
             self.client.client?.addCloseListener(named: "EmCuTeeTee") { result in
-                addMessage("Connection closed")
-                addMessage("Reconnecting...")
                 Task {
+                    addMessage("Connection closed")
+                    addMessage("Reconnecting...")
                     await self.connect()
                 }
             }
@@ -250,7 +253,7 @@ struct ServerView: View {
 
         func create(
             details: ServerDetails,
-            onPublish: @escaping (Result<MQTTPublishInfo, Error>)->()
+            onPublish: @escaping (Result<MQTTPublishInfo, Error>) -> ()
         ) {
             let config = MQTTClient.Configuration(
                 version: details.version,
