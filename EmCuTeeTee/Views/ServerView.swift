@@ -172,53 +172,6 @@ struct ServerView: View {
         let username: String?
         let password: String?
     }
-
-    class Client {
-        static let eventLoopGroup = NIOTSEventLoopGroup()
-
-        var client: MQTTClient?
-        var logger: Logger = {
-            var logger = Logger(label: "EmCuteetee")
-            #if DEBUG
-            logger.logLevel = .trace
-            #else
-            logger.logLevel = .critical
-            #endif
-            return logger
-        } ()
-
-        func create(
-            details: ServerDetails,
-            onPublish: @escaping (Result<MQTTPublishInfo, Error>)->()
-        ) {
-            let config = MQTTClient.Configuration(
-                version: details.version,
-                userName: details.username,
-                password: details.password,
-                useSSL: details.useTLS,
-                useWebSockets: details.useWebSocket,
-                webSocketURLPath: details.webSocketUrl
-            )
-            self.client = .init(
-                host: details.hostname,
-                port: details.port,
-                identifier: details.identifier,
-                eventLoopGroupProvider: .shared(Self.eventLoopGroup),
-                logger: self.logger,
-                configuration: config
-            )
-            self.client?.addPublishListener(named: "MQTTClient") { result in
-                onPublish(result)
-            }
-        }
-
-        func destroy() {
-            self.client?.disconnect().whenComplete { _ in
-                try? self.client?.syncShutdownGracefully()
-                self.client = nil
-            }
-        }
-    }
 }
 
 /// Object MQTTClient and passing messages back to View
