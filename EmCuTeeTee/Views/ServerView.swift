@@ -6,10 +6,11 @@
 //
 
 import Logging
-import MQTTNIO
+@preconcurrency import MQTTNIO
 import NIO
 import NIOTransportServices
 import SwiftUI
+import Synchronization
 
 @MainActor
 struct ServerView: View {
@@ -54,9 +55,9 @@ struct ServerView: View {
                             )
                     }
                 }
-                .onChange(of: messages) { target in
+                .onChange(of: messages) { oldValue, newValue in
                     withAnimation {
-                        scrollView.scrollTo(target.last?.id, anchor: .bottom)
+                        scrollView.scrollTo(newValue.last?.id, anchor: .bottom)
                     }
                 }
             }
@@ -70,7 +71,7 @@ struct ServerView: View {
         }
         .navigationBarTitle(Text(self.serverDetails.hostname))
         .task {
-            let client = MQTTClientConnection(view: self)
+            let client = await MQTTClientConnection(view: self)
             self.client = client
             await client.connect()
 
@@ -160,7 +161,7 @@ struct ServerView: View {
         let id: Int
     }
 
-    struct ServerDetails {
+    struct ServerDetails: Sendable {
         let identifier: String
         let hostname: String
         let port: Int
@@ -175,13 +176,13 @@ struct ServerView: View {
 }
 
 /// Object MQTTClient and passing messages back to View
-class MQTTClientConnection {
+final class MQTTClientConnection: Sendable {
     static let eventLoopGroup = NIOTSEventLoopGroup()
     let view: ServerView
     let client: MQTTClient
-    var shuttingDown: Bool
+    let shuttingDown: Atomic<Bool>
 
-    init(view: ServerView) {
+    init(view: ServerView) async {
         let details = view.serverDetails
         let config = MQTTClient.Configuration(
             version: details.version,
@@ -204,16 +205,17 @@ class MQTTClientConnection {
             configuration: config
         )
         self.view = view
-        self.shuttingDown = false
+        self.shuttingDown = .init(false)
 
+        let maxPayloadLength = await ServerView.maxPayloadLength
         self.client.addPublishListener(named: "MQTTClient") { result in
             switch result {
             case .success(let value):
                 let string = String(buffer: value.payload)
                 Task {
                     var output: String
-                    if string.count > ServerView.maxPayloadLength {
-                        output = string.prefix(ServerView.maxPayloadLength) + "..."
+                    if string.count > maxPayloadLength {
+                        output = string.prefix(maxPayloadLength) + "..."
                     } else {
                         output = string
                     }
@@ -229,7 +231,7 @@ class MQTTClientConnection {
         do {
             _ = try await self.client.connect(cleanSession: view.serverDetails.cleanSession)
             self.client.addCloseListener(named: "EmCuTeeTee") { result in
-                guard !self.shuttingDown else { return }
+                guard !self.shuttingDown.load(ordering: .relaxed) else { return }
                 Task {
                     await self.view.addMessage("Connection closed", now: true)
                     await self.view.addMessage("Reconnecting...", now: true)
@@ -243,7 +245,7 @@ class MQTTClientConnection {
     }
 
     func shutdown() async {
-        self.shuttingDown = true
+        self.shuttingDown.store(true, ordering: .relaxed)
         try? await self.client.disconnect()
         try? await self.client.shutdown()
     }
