@@ -53,6 +53,7 @@ struct ServerView: View {
                                 RoundedRectangle(cornerRadius: 16.0)
                                     .stroke(Color.secondary, lineWidth: 2)
                             )
+                            .id($0.id)
                     }
                 }
                 .onChange(of: messages) { oldValue, newValue in
