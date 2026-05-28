@@ -190,7 +190,7 @@ struct ServerView: View {
                             case .v3_1_1:
                                 MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
                             case .v5_0:
-                                MQTTConnectionConfiguration.VersionConfiguration.v5_0()
+                                MQTTConnectionConfiguration.VersionConfiguration.v5_0(connectProperties: [.sessionExpiryInterval(60*60)])
                             }
                             let tls = if server.configuration.useTLS {
                                 MQTTConnectionConfiguration.TLS.enable(.ts(.init()), tlsServerName: server.configuration.hostname)
@@ -214,21 +214,30 @@ struct ServerView: View {
                                 session: session,
                                 eventLoop: NIOTSEventLoopGroup.singleton.next(),
                                 logger: logger
-                            ) { connection in
-                                server.messageContinuation.yield("Connected")
+                            ) { connection, sessionPresent in
+                                server.messageContinuation.yield("Connected (\(sessionPresent ? "found session": "no session" ))")
                                 // publish messages
-                                for await publish in server.publishStream {
-                                    do {
-                                        try await connection.publish(
-                                            to: publish.topic,
-                                            payload: .init(string: publish.payload),
-                                            qos: publish.qos,
-                                            retain: publish.retain
-                                        )
-                                        server.messageContinuation.yield("Published to \(publish.topic)")
-                                    } catch {
-                                        server.messageContinuation.yield("Failed to publish to \(publish.topic)")
+                                try await withThrowingTaskGroup { group in
+                                    group.addTask {
+                                        for await publish in server.publishStream {
+                                            do {
+                                                try await connection.publish(
+                                                    to: publish.topic,
+                                                    payload: .init(string: publish.payload),
+                                                    qos: publish.qos,
+                                                    retain: publish.retain
+                                                )
+                                                server.messageContinuation.yield("Published to \(publish.topic)")
+                                            } catch {
+                                                server.messageContinuation.yield("Failed to publish to \(publish.topic)")
+                                            }
+                                        }
                                     }
+                                    group.addTask {
+                                        await connection.waitOnClose()
+                                        throw MQTTError.connectionClosed
+                                    }
+                                    try await group.next()!
                                 }
                             }
                         } catch {
@@ -245,6 +254,9 @@ struct ServerView: View {
                         let (cancelStream, cancelContinuation) = AsyncStream.makeStream(of: Void.self)
                         guard subscriptions.addNewSubscription(topic, cancelContinuation: cancelContinuation) else { continue }
                         group.addTask {
+                            defer {
+                                subscriptions.removeSubscription(topic)
+                            }
                             try await session.subscribe(to: [.init(topicFilter: topic, qos: .exactlyOnce)]) { subscription in
                                 // Create async sequence of subscription stream merged with cancellation sequence
                                 enum MergedStreamType {

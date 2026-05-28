@@ -29,5 +29,11 @@ final class Subscriptions: Sendable {
             $0.removeValue(forKey: topic)
         }
     }
+    
+    func removeSubscription(_ topic: String) {
+        subscriptions.withLock {
+            _ = $0.removeValue(forKey: topic)
+        }
+    }
 }
 
