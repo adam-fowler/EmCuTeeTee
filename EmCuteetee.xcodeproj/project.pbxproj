@@ -20,6 +20,7 @@
 		D1D845452FC8393C005D745C /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845442FC8393C005D745C /* MQTTNIO */; };
 		D1D845482FC874A3005D745C /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845472FC874A3005D745C /* AsyncAlgorithms */; };
 		D1D8454A2FC874A3005D745C /* AsyncStreaming in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845492FC874A3005D745C /* AsyncStreaming */; };
+		D1D8454D2FC878E1005D745C /* Subscriptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8454C2FC878D7005D745C /* Subscriptions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		D10FB2A02689D52E004DC992 /* PublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishView.swift; sourceTree = "<group>"; };
 		D10FB2A8268C5CEE004DC992 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		D10FB2AB268CB905004DC992 /* BasicTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BasicTextFieldStyle.swift; path = EmCuTeeTee/ViewModifiers/BasicTextFieldStyle.swift; sourceTree = SOURCE_ROOT; };
+		D1D8454C2FC878D7005D745C /* Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscriptions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 		D10FB28526887313004DC992 /* EmCuTeeTee */ = {
 			isa = PBXGroup;
 			children = (
+				D1D8454B2FC878CC005D745C /* Utils */,
 				D10FB2AA268C6941004DC992 /* Views */,
 				D10FB28626887313004DC992 /* EmCuTeeTeeApp.swift */,
 				D10FB2A8268C5CEE004DC992 /* UserSettings.swift */,
@@ -99,6 +102,14 @@
 				D10FB29E2689B395004DC992 /* UnsubscribeView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		D1D8454B2FC878CC005D745C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				D1D8454C2FC878D7005D745C /* Subscriptions.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -185,6 +196,7 @@
 				D10FB299268879AD004DC992 /* ServerView.swift in Sources */,
 				D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */,
 				D10FB2AC268CB905004DC992 /* BasicTextFieldStyle.swift in Sources */,
+				D1D8454D2FC878E1005D745C /* Subscriptions.swift in Sources */,
 				D10FB28926887313004DC992 /* ServerDetailsView.swift in Sources */,
 				D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */,
 				D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */,

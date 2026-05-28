@@ -43,51 +43,6 @@ struct ServerConfiguration: Sendable {
     let password: String?
 }
 
-final class SubscriptionState: Sendable {
-    enum State {
-        case settingUp
-        case running(AsyncStream<Void>.Continuation)
-    }
-
-    let stateMap: Mutex<[String: State]>
-    
-    init() {
-        self.stateMap = .init([:])
-    }
-    
-    func addNewSubscription(_ topic: String) -> Bool {
-        stateMap.withLock {
-            guard $0[topic] == nil else { return false}
-            $0[topic] = .settingUp
-            return true
-        }
-    }
-    
-    func subscriptionSetup(_ topic: String, finishContinuation: AsyncStream<Void>.Continuation) -> Bool {
-        stateMap.withLock {
-            switch $0[topic] {
-            case .settingUp:
-                $0[topic] = .running(finishContinuation)
-                return true
-            default:
-                return false
-            }
-        }
-    }
-    
-    func cancelSubscription(_ topic: String) {
-        stateMap.withLock {
-            switch $0[topic] {
-            case .running(let continuation):
-                continuation.yield()
-                $0.removeValue(forKey: topic)
-            default:
-                break
-            }
-        }
-    }
-}
-
 private let maxPayloadLength = 256
 private let maxNumMessages = 50
 
@@ -230,6 +185,7 @@ struct ServerView: View {
                     while !Task.isCancelled {
                         server.messageContinuation.yield("Connecting...")
                         do {
+                            // Server configuration
                             let version = switch server.configuration.version {
                             case .v3_1_1:
                                 MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
@@ -246,6 +202,7 @@ struct ServerView: View {
                             } else {
                                 nil
                             }
+                            // Run connection
                             try await MQTTConnection.withConnection(
                                 address: .hostname(server.configuration.hostname, port: server.configuration.port),
                                 configuration: .init(
@@ -259,6 +216,7 @@ struct ServerView: View {
                                 logger: logger
                             ) { connection in
                                 server.messageContinuation.yield("Connected")
+                                // publish messages
                                 for await publish in server.publishStream {
                                     do {
                                         try await connection.publish(
@@ -278,21 +236,25 @@ struct ServerView: View {
                         }
                     }
                 }
-                let subscriptions = SubscriptionState()
+                let subscriptions = Subscriptions()
+                // for each subscription add a new task group
                 for try await event in server.subscribeStream {
                     switch event {
                     case .subscribe(let topic):
-                        guard subscriptions.addNewSubscription(topic) else { continue }
+                        // verify we aren't already running this subscription
+                        let (cancelStream, cancelContinuation) = AsyncStream.makeStream(of: Void.self)
+                        guard subscriptions.addNewSubscription(topic, cancelContinuation: cancelContinuation) else { continue }
                         group.addTask {
                             try await session.subscribe(to: [.init(topicFilter: topic, qos: .exactlyOnce)]) { subscription in
-                                // Create async sequence of subscription stream merged with a cancellation sequence
+                                // Create async sequence of subscription stream merged with cancellation sequence
                                 enum MergedStreamType {
                                     case publish(MQTTSubscription.Element)
-                                    case end
+                                    case cancel
                                 }
-                                let (cancelStream, cancelContinuation) = AsyncStream.makeStream(of: Void.self)
-                                let mergedStream = merge(subscription.map { MergedStreamType.publish($0)}, cancelStream.map {MergedStreamType.end })
-                                guard subscriptions.subscriptionSetup(topic, finishContinuation: cancelContinuation) else { return }
+                                let mergedStream = merge(
+                                    subscription.map { MergedStreamType.publish($0)},
+                                    cancelStream.map {MergedStreamType.cancel }
+                                )
                                 server.messageContinuation.yield("Subscribe to: \(topic)")
                                 for try await message in mergedStream {
                                     switch message {
@@ -305,7 +267,7 @@ struct ServerView: View {
                                             output = subscriptionOutput
                                         }
                                         server.messageContinuation.yield(output)
-                                    case .end:
+                                    case .cancel:
                                         return
                                     }
                                 }
