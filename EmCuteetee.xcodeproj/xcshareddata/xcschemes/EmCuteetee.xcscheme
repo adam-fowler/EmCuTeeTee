@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2600"
+   LastUpgradeVersion = "2650"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "D10FB28226887313004DC992"
                BuildableName = "EmCuteetee.app"
                BlueprintName = "EmCuteetee"
-               ReferencedContainer = "container:EmCuteetee.xcodeproj">
+               ReferencedContainer = "container:EmCuTeeTee.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "D10FB28226887313004DC992"
             BuildableName = "EmCuteetee.app"
             BlueprintName = "EmCuteetee"
-            ReferencedContainer = "container:EmCuteetee.xcodeproj">
+            ReferencedContainer = "container:EmCuTeeTee.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "D10FB28226887313004DC992"
             BuildableName = "EmCuteetee.app"
             BlueprintName = "EmCuteetee"
-            ReferencedContainer = "container:EmCuteetee.xcodeproj">
+            ReferencedContainer = "container:EmCuTeeTee.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

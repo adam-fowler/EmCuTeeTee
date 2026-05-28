@@ -102,7 +102,7 @@ struct ServerDetailsView: View {
                     Toggle("Clean Session", isOn: $settings.cleanSession)
                     NavigationLink (
                         destination: ServerView(
-                            serverDetails: .init(
+                            serverConfiguration: .init(
                                 identifier: settings.clientIdentifier,
                                 hostname: settings.hostname,
                                 port: settings.port,

@@ -10,7 +10,7 @@ import SwiftUI
 struct SubscribeView: View {
     @Binding var showView: Bool
     @Binding var topicName: String
-    let onOk: () -> ()
+    let onOk: (String) -> ()
 
     var body: some View {
         Form {
@@ -23,13 +23,13 @@ struct SubscribeView: View {
             }
             HStack {
                 Button("Cancel") {
-                    self.showView = false
+                    self.showView.toggle()
                 }
                 .buttonStyle(BorderlessButtonStyle())
                 Spacer()
                 Button("OK") {
-                    onOk()
-                    self.showView = false
+                    onOk(topicName)
+                    self.showView.toggle()
                 }
                 .disabled(topicName.count == 0)
                 .buttonStyle(BorderlessButtonStyle())

@@ -11,13 +11,15 @@
 		D10FB28926887313004DC992 /* ServerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB28826887313004DC992 /* ServerDetailsView.swift */; };
 		D10FB28B26887314004DC992 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28A26887314004DC992 /* Assets.xcassets */; };
 		D10FB28E26887314004DC992 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D10FB28D26887314004DC992 /* Preview Assets.xcassets */; };
-		D10FB29726887395004DC992 /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D10FB29626887395004DC992 /* MQTTNIO */; };
 		D10FB299268879AD004DC992 /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB298268879AD004DC992 /* ServerView.swift */; };
 		D10FB29D268894DB004DC992 /* SubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB29C268894DB004DC992 /* SubscribeView.swift */; };
 		D10FB29F2689B395004DC992 /* UnsubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB29E2689B395004DC992 /* UnsubscribeView.swift */; };
 		D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A02689D52E004DC992 /* PublishView.swift */; };
 		D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A8268C5CEE004DC992 /* UserSettings.swift */; };
 		D10FB2AC268CB905004DC992 /* BasicTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2AB268CB905004DC992 /* BasicTextFieldStyle.swift */; };
+		D1D845452FC8393C005D745C /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845442FC8393C005D745C /* MQTTNIO */; };
+		D1D845482FC874A3005D745C /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845472FC874A3005D745C /* AsyncAlgorithms */; };
+		D1D8454A2FC874A3005D745C /* AsyncStreaming in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845492FC874A3005D745C /* AsyncStreaming */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D10FB29726887395004DC992 /* MQTTNIO in Frameworks */,
+				D1D845452FC8393C005D745C /* MQTTNIO in Frameworks */,
+				D1D845482FC874A3005D745C /* AsyncAlgorithms in Frameworks */,
+				D1D8454A2FC874A3005D745C /* AsyncStreaming in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,7 +118,9 @@
 			);
 			name = EmCuteetee;
 			packageProductDependencies = (
-				D10FB29626887395004DC992 /* MQTTNIO */,
+				D1D845442FC8393C005D745C /* MQTTNIO */,
+				D1D845472FC874A3005D745C /* AsyncAlgorithms */,
+				D1D845492FC874A3005D745C /* AsyncStreaming */,
 			);
 			productName = EmCuteetee;
 			productReference = D10FB28326887313004DC992 /* EmCuteetee.app */;
@@ -128,14 +134,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1250;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					D10FB28226887313004DC992 = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
 				};
 			};
-			buildConfigurationList = D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuteetee" */;
+			buildConfigurationList = D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuTeeTee" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -145,7 +151,8 @@
 			);
 			mainGroup = D10FB27A26887313004DC992;
 			packageReferences = (
-				D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */,
+				D1D845432FC8393C005D745C /* XCRemoteSwiftPackageReference "mqtt-nio" */,
+				D1D845462FC874A3005D745C /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = D10FB28426887313004DC992 /* Products */;
 			projectDirPath = "";
@@ -248,6 +255,13 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_DISABLE_OUTWARD_ACTOR_ISOLATION = YES;
+				SWIFT_UPCOMING_FEATURE_DYNAMIC_ACTOR_ISOLATION = YES;
+				SWIFT_UPCOMING_FEATURE_GLOBAL_ACTOR_ISOLATED_TYPES_USABILITY = YES;
+				SWIFT_UPCOMING_FEATURE_GLOBAL_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
+				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
+				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 			};
 			name = Debug;
 		};
@@ -305,6 +319,13 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_UPCOMING_FEATURE_DISABLE_OUTWARD_ACTOR_ISOLATION = YES;
+				SWIFT_UPCOMING_FEATURE_DYNAMIC_ACTOR_ISOLATION = YES;
+				SWIFT_UPCOMING_FEATURE_GLOBAL_ACTOR_ISOLATED_TYPES_USABILITY = YES;
+				SWIFT_UPCOMING_FEATURE_GLOBAL_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
+				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
+				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -362,7 +383,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuteetee" */ = {
+		D10FB27E26887313004DC992 /* Build configuration list for PBXProject "EmCuTeeTee" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D10FB29026887314004DC992 /* Debug */,
@@ -383,21 +404,39 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */ = {
+		D1D845432FC8393C005D745C /* XCRemoteSwiftPackageReference "mqtt-nio" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/adam-fowler/mqtt-nio";
+			repositoryURL = "https://github.com/swift-server-community/mqtt-nio";
+			requirement = {
+				branch = v3;
+				kind = branch;
+			};
+		};
+		D1D845462FC874A3005D745C /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 1.1.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D10FB29626887395004DC992 /* MQTTNIO */ = {
+		D1D845442FC8393C005D745C /* MQTTNIO */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D10FB29526887395004DC992 /* XCRemoteSwiftPackageReference "mqtt-nio" */;
+			package = D1D845432FC8393C005D745C /* XCRemoteSwiftPackageReference "mqtt-nio" */;
 			productName = MQTTNIO;
+		};
+		D1D845472FC874A3005D745C /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1D845462FC874A3005D745C /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
+		D1D845492FC874A3005D745C /* AsyncStreaming */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1D845462FC874A3005D745C /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncStreaming;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

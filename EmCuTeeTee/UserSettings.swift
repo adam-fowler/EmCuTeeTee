@@ -17,7 +17,7 @@ class UserSettings: ObservableObject {
     @Published var clientIdentifier: String {
         didSet { UserDefaults.standard.set(self.clientIdentifier, forKey: "clientIdentifier") }
     }
-    @Published var version: MQTTClient.Version {
+    @Published var version: MQTTConnectionConfiguration.Version {
         didSet {
             switch version {
             case .v3_1_1:

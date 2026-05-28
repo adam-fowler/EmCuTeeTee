@@ -5,6 +5,7 @@
 //  Created by Adam Fowler on 27/06/2021.
 //
 
+import AsyncAlgorithms
 import Logging
 @preconcurrency import MQTTNIO
 import NIO
@@ -12,19 +13,92 @@ import NIOTransportServices
 import SwiftUI
 import Synchronization
 
+struct Server {
+    struct PublishInfo {
+        let topic: String
+        let payload: String
+        let qos: MQTTQoS
+        let retain: Bool
+    }
+    enum SubscribeEvent {
+        case subscribe(String)
+        case unsubscribe(String)
+    }
+    let configuration: ServerConfiguration
+    let messageContinuation: AsyncStream<String>.Continuation
+    let publishStream: AsyncStream<PublishInfo>
+    let subscribeStream: AsyncStream<SubscribeEvent>
+}
+
+struct ServerConfiguration: Sendable {
+    let identifier: String
+    let hostname: String
+    let port: Int
+    let version: MQTTConnectionConfiguration.Version
+    let cleanSession: Bool
+    let useTLS: Bool
+    let useWebSocket: Bool
+    let webSocketUrl: String
+    let username: String?
+    let password: String?
+}
+
+final class SubscriptionState: Sendable {
+    enum State {
+        case settingUp
+        case running(AsyncStream<Void>.Continuation)
+    }
+
+    let stateMap: Mutex<[String: State]>
+    
+    init() {
+        self.stateMap = .init([:])
+    }
+    
+    func addNewSubscription(_ topic: String) -> Bool {
+        stateMap.withLock {
+            guard $0[topic] == nil else { return false}
+            $0[topic] = .settingUp
+            return true
+        }
+    }
+    
+    func subscriptionSetup(_ topic: String, finishContinuation: AsyncStream<Void>.Continuation) -> Bool {
+        stateMap.withLock {
+            switch $0[topic] {
+            case .settingUp:
+                $0[topic] = .running(finishContinuation)
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
+    func cancelSubscription(_ topic: String) {
+        stateMap.withLock {
+            switch $0[topic] {
+            case .running(let continuation):
+                continuation.yield()
+                $0.removeValue(forKey: topic)
+            default:
+                break
+            }
+        }
+    }
+}
+
+private let maxPayloadLength = 256
+private let maxNumMessages = 50
+
 @MainActor
 struct ServerView: View {
-    static let maxPayloadLength = 256
-    static let maxNumMessages = 50
+    let serverConfiguration: ServerConfiguration
+    
+    @State var publishContinuation: AsyncStream<Server.PublishInfo>.Continuation?
+    @State var subscribeContinuation: AsyncStream<Server.SubscribeEvent>.Continuation?
 
-    let serverDetails: ServerDetails
-
-    @State var client: MQTTClientConnection?
-
-    var connected: Bool = false
-    @State var receivedMessages = CircularBuffer<String>()
     @State var messages = CircularBuffer<Message>()
-    @State var currentId: Int = 0
 
     // subscribe sheet variables
     @State var showSubscribe = false
@@ -40,7 +114,7 @@ struct ServerView: View {
     @State var publishRetain: Bool = false
 
     @State var timer: Timer? = nil
-
+    
     var body: some View {
         NavigationView {
             ScrollViewReader { scrollView in
@@ -70,24 +144,36 @@ struct ServerView: View {
                 ToolbarItem(placement: .bottomBar) { publishButton }
             }
         }
-        .navigationBarTitle(Text(self.serverDetails.hostname))
+        .navigationBarTitle(Text(self.serverConfiguration.hostname))
         .task {
-            let client = await MQTTClientConnection(view: self)
-            self.client = client
-            await client.connect()
-
-            var cancelled = false
-            while !cancelled {
-                do  {
-                    try await Task.sleep(nanoseconds: 500_000_000)
-                } catch {
-                    cancelled = true
-                }
-                self.updateMessageList()
+            let (messageStream, messageCont) = AsyncStream.makeStream(of: String.self)
+            let (publishStream, publishCont) = AsyncStream.makeStream(of: Server.PublishInfo.self)
+            let (subscribeStream, subscribeCont) = AsyncStream.makeStream(of: Server.SubscribeEvent.self)
+            self.publishContinuation = publishCont
+            self.subscribeContinuation = subscribeCont
+            defer {
+                self.publishContinuation = nil
+                self.subscribeContinuation = nil
             }
-
-            await client.shutdown()
-            self.client = nil
+            let server = Server(
+                configuration: self.serverConfiguration,
+                messageContinuation: messageCont,
+                publishStream: publishStream,
+                subscribeStream: subscribeStream
+            )
+            
+            await withTaskGroup { group in
+                group.addTask {
+                    await runServer(server)
+                }
+                group.addTask {
+                    var currentID = 0
+                    for await message in messageStream {
+                        currentID += 1
+                        await self.addMessage(message, id: currentID)
+                    }
+                }
+            }
         }
     }
 
@@ -97,9 +183,7 @@ struct ServerView: View {
         }
         .sheet(isPresented: $showSubscribe) {
             SubscribeView(showView: $showSubscribe, topicName: $subscribeTopic) {
-                Task {
-                    await self.client?.subscribe(topic: subscribeTopic)
-                }
+                subscribeContinuation?.yield(.subscribe($0))
             }
         }
     }
@@ -110,9 +194,7 @@ struct ServerView: View {
         }
         .sheet(isPresented: $showUnsubscribe) {
             UnsubscribeView(showView: $showUnsubscribe, topicName: $unsubscribeTopic) {
-                Task {
-                    await self.client?.unsubscribe(topic: unsubscribeTopic)
-                }
+               subscribeContinuation?.yield(.unsubscribe($0))
             }
         }
     }
@@ -129,166 +211,136 @@ struct ServerView: View {
                 qos: $publishQoS,
                 retain: $publishRetain
             ) {
-                Task {
-                    await self.client?.publish(topic: publishTopic, payload: publishPayload, qos: publishQoS, retain: publishRetain)
+                guard let qos = MQTTQoS(rawValue: UInt8(publishQoS)) else { return }
+                publishContinuation?.yield(.init(topic: publishTopic, payload: publishPayload, qos: qos, retain: publishRetain))
+            }
+        }
+    }
+
+    @concurrent func runServer(_ server: Server) async {
+        let logger = {
+            var logger = Logger(label: "EmCuTeeTee")
+            logger.logLevel = .trace
+            return logger
+        }()
+        do {
+            try await withThrowingTaskGroup { group in
+                let session = MQTTSession(clientID: server.configuration.identifier, logger: logger)
+                group.addTask {
+                    while !Task.isCancelled {
+                        server.messageContinuation.yield("Connecting...")
+                        do {
+                            let version = switch server.configuration.version {
+                            case .v3_1_1:
+                                MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
+                            case .v5_0:
+                                MQTTConnectionConfiguration.VersionConfiguration.v5_0()
+                            }
+                            let tls = if server.configuration.useTLS {
+                                MQTTConnectionConfiguration.TLS.enable(.ts(.init()), tlsServerName: server.configuration.hostname)
+                            } else {
+                                MQTTConnectionConfiguration.TLS.disable
+                            }
+                            let ws:MQTTConnectionConfiguration.WebSocketConfiguration? = if server.configuration.useWebSocket {
+                                .init(urlPath: server.configuration.webSocketUrl)
+                            } else {
+                                nil
+                            }
+                            try await MQTTConnection.withConnection(
+                                address: .hostname(server.configuration.hostname, port: server.configuration.port),
+                                configuration: .init(
+                                    versionConfiguration: version,
+                                    connectTimeout: .seconds(30),
+                                    tls: tls,
+                                    webSocketConfiguration: ws
+                                ),
+                                session: session,
+                                eventLoop: NIOTSEventLoopGroup.singleton.next(),
+                                logger: logger
+                            ) { connection in
+                                server.messageContinuation.yield("Connected")
+                                for await publish in server.publishStream {
+                                    do {
+                                        try await connection.publish(
+                                            to: publish.topic,
+                                            payload: .init(string: publish.payload),
+                                            qos: publish.qos,
+                                            retain: publish.retain
+                                        )
+                                        server.messageContinuation.yield("Published to \(publish.topic)")
+                                    } catch {
+                                        server.messageContinuation.yield("Failed to publish to \(publish.topic)")
+                                    }
+                                }
+                            }
+                        } catch {
+                            server.messageContinuation.yield("Connection error: \(error)")
+                        }
+                    }
                 }
+                let subscriptions = SubscriptionState()
+                for try await event in server.subscribeStream {
+                    switch event {
+                    case .subscribe(let topic):
+                        guard subscriptions.addNewSubscription(topic) else { continue }
+                        group.addTask {
+                            try await session.subscribe(to: [.init(topicFilter: topic, qos: .exactlyOnce)]) { subscription in
+                                // Create async sequence of subscription stream merged with a cancellation sequence
+                                enum MergedStreamType {
+                                    case publish(MQTTSubscription.Element)
+                                    case end
+                                }
+                                let (cancelStream, cancelContinuation) = AsyncStream.makeStream(of: Void.self)
+                                let mergedStream = merge(subscription.map { MergedStreamType.publish($0)}, cancelStream.map {MergedStreamType.end })
+                                guard subscriptions.subscriptionSetup(topic, finishContinuation: cancelContinuation) else { return }
+                                server.messageContinuation.yield("Subscribe to: \(topic)")
+                                for try await message in mergedStream {
+                                    switch message {
+                                    case .publish(let message):
+                                        let subscriptionOutput = "\(topic): \(String(buffer :message.payload))"
+                                        var output: String
+                                        if subscriptionOutput.count > maxPayloadLength {
+                                            output = subscriptionOutput.prefix(maxPayloadLength) + "..."
+                                        } else {
+                                            output = subscriptionOutput
+                                        }
+                                        server.messageContinuation.yield(output)
+                                    case .end:
+                                        return
+                                    }
+                                }
+                            }
+                        }
+                    case .unsubscribe(let topic):
+                        subscriptions.cancelSubscription(topic)
+                    }
+                }
+
+                try await group.waitForAll()
             }
+        } catch {
+            server.messageContinuation.yield("Error: \(error)")
         }
     }
 
-    /// Update list of messages. Call this every at a set interval instead of updating messages
-    /// every time a new message comes in.
-    func updateMessageList() {
-        guard showPublish == false, showSubscribe == false, showUnsubscribe == false else { return }
-        while let message = receivedMessages.popFirst() {
-            self.currentId += 1
-            messages.append(.init(text: message, id: self.currentId))
-            if messages.count > Self.maxNumMessages {
-                messages.removeFirst()
-            }
+    func addMessage(_ message: String, id: Int) {
+        messages.append(.init(text: message, id: id))
+        if messages.count > maxNumMessages {
+            messages.removeFirst()
         }
     }
-
-    func addMessage(_ text: String, now: Bool = false) {
-        self.receivedMessages.append(text)
-        if now {
-            updateMessageList()
-        }
-    }
-
+    
     /// Message displayed in list
     struct Message: Identifiable, Equatable {
         let text: String
         let id: Int
     }
-
-    struct ServerDetails: Sendable {
-        let identifier: String
-        let hostname: String
-        let port: Int
-        let version: MQTTClient.Version
-        let cleanSession: Bool
-        let useTLS: Bool
-        let useWebSocket: Bool
-        let webSocketUrl: String
-        let username: String?
-        let password: String?
-    }
 }
-
-/// Object MQTTClient and passing messages back to View
-final class MQTTClientConnection: Sendable {
-    static let eventLoopGroup = NIOTSEventLoopGroup()
-    let view: ServerView
-    let client: MQTTClient
-    let shuttingDown: Atomic<Bool>
-
-    init(view: ServerView) async {
-        let details = view.serverDetails
-        let config = MQTTClient.Configuration(
-            version: details.version,
-            useSSL: details.useTLS,
-            useWebSockets: details.useWebSocket,
-            webSocketURLPath: details.webSocketUrl
-        )
-        var logger = Logger(label: "EmCuteetee")
-        #if DEBUG
-        logger.logLevel = .trace
-        #else
-        logger.logLevel = .critical
-        #endif
-        self.client = .init(
-            host: details.hostname,
-            port: details.port,
-            identifier: details.identifier,
-            eventLoopGroupProvider: .shared(Self.eventLoopGroup),
-            logger: logger,
-            configuration: config
-        )
-        self.view = view
-        self.shuttingDown = .init(false)
-
-        let maxPayloadLength = await ServerView.maxPayloadLength
-        self.client.addPublishListener(named: "MQTTClient") { result in
-            switch result {
-            case .success(let value):
-                let string = String(buffer: value.payload)
-                Task {
-                    var output: String
-                    if string.count > maxPayloadLength {
-                        output = string.prefix(maxPayloadLength) + "..."
-                    } else {
-                        output = string
-                    }
-                    await view.addMessage("\(value.topicName):\n\(output)")
-                }
-            case .failure:
-                break
-            }
-        }
-    }
-
-    func connect() async {
-        do {
-            _ = try await self.client.connect(cleanSession: view.serverDetails.cleanSession)
-            self.client.addCloseListener(named: "EmCuTeeTee") { result in
-                guard !self.shuttingDown.load(ordering: .relaxed) else { return }
-                Task {
-                    await self.view.addMessage("Connection closed", now: true)
-                    await self.view.addMessage("Reconnecting...", now: true)
-                    await self.connect()
-                }
-            }
-            await self.view.addMessage("Connection successful", now: true)
-        } catch {
-            await self.view.addMessage("Failed to connect\n\(error)", now: true)
-        }
-    }
-
-    func shutdown() async {
-        self.shuttingDown.store(true, ordering: .relaxed)
-        try? await self.client.disconnect()
-        try? await self.client.shutdown()
-    }
-
-    func publish(topic: String, payload: String, qos: Int, retain: Bool) async {
-        do {
-            _ = try await self.client.publish(
-                to: topic,
-                payload: ByteBufferAllocator().buffer(string: payload),
-                qos: .init(rawValue: UInt8(qos))!,
-                retain: retain
-            )
-            await self.view.addMessage("Published to \(topic)", now: true)
-        } catch {
-            await self.view.addMessage("Failed to publish to \(topic)\nError: \(error)", now: true)
-        }
-    }
-
-    func subscribe(topic: String) async {
-        do {
-            _ = try await self.client.subscribe(to: [MQTTSubscribeInfo(topicFilter: topic, qos: MQTTQoS.exactlyOnce)])
-            await self.view.addMessage("Subscribed to \(topic)", now: true)
-        } catch {
-            await self.view.addMessage("Failed to subscribe to \(topic)\nError: \(error)", now: true)
-        }
-    }
-
-    func unsubscribe(topic: String) async {
-        do {
-            _ = try await self.client.unsubscribe(from: [topic])
-            await self.view.addMessage("Unsubscribed to \(topic)", now: true)
-        } catch {
-            await self.view.addMessage("Failed to unsubscribe from \(topic)\nError: \(error)", now: true)
-        }
-    }
-}
-
 
 struct ServerView_Previews: PreviewProvider {
     static var previews: some View {
         ServerView(
-            serverDetails: .init(
+            serverConfiguration: .init(
                 identifier: "Test Client",
                 hostname: "localhost",
                 port: 1883,
