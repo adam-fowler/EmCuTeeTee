@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server-community/mqtt-nio",
       "state" : {
-        "branch" : "wait-on-close",
-        "revision" : "059e87f54c83f6cbdca81bccbf6aa0c424f653e8"
+        "branch" : "clean-start-on-empty-session",
+        "revision" : "2077432fe9ca340e7aac3dbf5d777e91f6d68489"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "7dc6101ae4dbe95cd3bc9cebad3b7cf8e49a7a63",
-        "version" : "1.13.0"
+        "revision" : "2aed77ae5ec9a86d8fe42c12275e4c2653a286ee",
+        "version" : "1.13.1"
       }
     },
     {

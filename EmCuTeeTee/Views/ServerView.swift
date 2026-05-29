@@ -13,48 +13,75 @@ import NIOTransportServices
 import SwiftUI
 import Synchronization
 
-struct Server {
+private let maxPayloadLength = 256
+private let maxNumMessages = 50
+
+@MainActor
+struct ServerView: View {
+    struct Server {
+        enum SubscribeEvent {
+            case subscribe(String)
+            case unsubscribe(String)
+        }
+        let configuration: ServerConfiguration
+        let messageContinuation: AsyncStream<String>.Continuation
+        let subscribeStream: AsyncStream<SubscribeEvent>
+    }
+
+    struct ServerConfiguration: Sendable {
+        let identifier: String
+        let hostname: String
+        let port: Int
+        let version: MQTTConnectionConfiguration.Version
+        let cleanSession: Bool
+        let useTLS: Bool
+        let useWebSocket: Bool
+        let webSocketUrl: String
+        let username: String?
+        let password: String?
+        
+        var connectionConfiguration: MQTTConnectionConfiguration {
+            // Server configuration
+            let version = switch self.version {
+            case .v3_1_1:
+                MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
+            case .v5_0:
+                MQTTConnectionConfiguration.VersionConfiguration.v5_0(connectProperties: [.sessionExpiryInterval(60*60)])
+            }
+            let tls = if self.useTLS {
+                MQTTConnectionConfiguration.TLS.enable(.ts(.init()), tlsServerName: self.hostname)
+            } else {
+                MQTTConnectionConfiguration.TLS.disable
+            }
+            let ws:MQTTConnectionConfiguration.WebSocketConfiguration? = if self.useWebSocket {
+                .init(urlPath: self.webSocketUrl)
+            } else {
+                nil
+            }
+            return .init(
+                versionConfiguration: version,
+                pingConfiguration: .pingInterval(.seconds(30)),
+                connectTimeout: .seconds(30),
+                tls: tls,
+                webSocketConfiguration: ws
+            )
+        }
+    }
+
     struct PublishInfo {
         let topic: String
         let payload: String
         let qos: MQTTQoS
         let retain: Bool
     }
-    enum SubscribeEvent {
-        case subscribe(String)
-        case unsubscribe(String)
-    }
-    let configuration: ServerConfiguration
-    let messageContinuation: AsyncStream<String>.Continuation
-    let publishStream: AsyncStream<PublishInfo>
-    let subscribeStream: AsyncStream<SubscribeEvent>
-}
-
-struct ServerConfiguration: Sendable {
-    let identifier: String
-    let hostname: String
-    let port: Int
-    let version: MQTTConnectionConfiguration.Version
-    let cleanSession: Bool
-    let useTLS: Bool
-    let useWebSocket: Bool
-    let webSocketUrl: String
-    let username: String?
-    let password: String?
-}
-
-private let maxPayloadLength = 256
-private let maxNumMessages = 50
-
-@MainActor
-struct ServerView: View {
     let serverConfiguration: ServerConfiguration
     
-    @State var publishContinuation: AsyncStream<Server.PublishInfo>.Continuation?
+    @State var publishContinuation: AsyncStream<PublishInfo>.Continuation?
     @State var subscribeContinuation: AsyncStream<Server.SubscribeEvent>.Continuation?
 
     @State var messages = CircularBuffer<Message>()
 
+    @State var connected = false
     // subscribe sheet variables
     @State var showSubscribe = false
     @State var subscribeTopic: String = ""
@@ -93,18 +120,14 @@ struct ServerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .bottomBar) { subscribeButton }
-                ToolbarItem(placement: .bottomBar) { Spacer() }
                 ToolbarItem(placement: .bottomBar) { unsubscribeButton }
-                ToolbarItem(placement: .bottomBar) { Spacer() }
                 ToolbarItem(placement: .bottomBar) { publishButton }
             }
         }
         .navigationBarTitle(Text(self.serverConfiguration.hostname))
         .task {
             let (messageStream, messageCont) = AsyncStream.makeStream(of: String.self)
-            let (publishStream, publishCont) = AsyncStream.makeStream(of: Server.PublishInfo.self)
             let (subscribeStream, subscribeCont) = AsyncStream.makeStream(of: Server.SubscribeEvent.self)
-            self.publishContinuation = publishCont
             self.subscribeContinuation = subscribeCont
             defer {
                 self.publishContinuation = nil
@@ -113,7 +136,6 @@ struct ServerView: View {
             let server = Server(
                 configuration: self.serverConfiguration,
                 messageContinuation: messageCont,
-                publishStream: publishStream,
                 subscribeStream: subscribeStream
             )
             
@@ -158,6 +180,7 @@ struct ServerView: View {
         Button("Publish") {
             showPublish = true
         }
+        .disabled(!connected)
         .sheet(isPresented: $showPublish) {
             PublishView(
                 showView: $showPublish,
@@ -170,6 +193,16 @@ struct ServerView: View {
                 publishContinuation?.yield(.init(topic: publishTopic, payload: publishPayload, qos: qos, retain: publishRetain))
             }
         }
+    }
+
+    func setConnected(_ cont: AsyncStream<PublishInfo>.Continuation?) {
+        self.publishContinuation = cont
+        self.connected = true
+    }
+
+    func setDisconnected() {
+        self.publishContinuation = nil
+        self.connected = false
     }
 
     @concurrent func runServer(_ server: Server) async {
@@ -185,41 +218,22 @@ struct ServerView: View {
                     while !Task.isCancelled {
                         server.messageContinuation.yield("Connecting...")
                         do {
-                            // Server configuration
-                            let version = switch server.configuration.version {
-                            case .v3_1_1:
-                                MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
-                            case .v5_0:
-                                MQTTConnectionConfiguration.VersionConfiguration.v5_0(connectProperties: [.sessionExpiryInterval(60*60)])
-                            }
-                            let tls = if server.configuration.useTLS {
-                                MQTTConnectionConfiguration.TLS.enable(.ts(.init()), tlsServerName: server.configuration.hostname)
-                            } else {
-                                MQTTConnectionConfiguration.TLS.disable
-                            }
-                            let ws:MQTTConnectionConfiguration.WebSocketConfiguration? = if server.configuration.useWebSocket {
-                                .init(urlPath: server.configuration.webSocketUrl)
-                            } else {
-                                nil
-                            }
                             // Run connection
                             try await MQTTConnection.withConnection(
                                 address: .hostname(server.configuration.hostname, port: server.configuration.port),
-                                configuration: .init(
-                                    versionConfiguration: version,
-                                    connectTimeout: .seconds(30),
-                                    tls: tls,
-                                    webSocketConfiguration: ws
-                                ),
+                                configuration: server.configuration.connectionConfiguration,
                                 session: session,
                                 eventLoop: NIOTSEventLoopGroup.singleton.next(),
                                 logger: logger
                             ) { connection, sessionPresent in
-                                server.messageContinuation.yield("Connected (\(sessionPresent ? "found session": "no session" ))")
+                                server.messageContinuation.yield("Connected (\(sessionPresent ? "found session": "new session" ))")
+                                
                                 // publish messages
                                 try await withThrowingTaskGroup { group in
                                     group.addTask {
-                                        for await publish in server.publishStream {
+                                        let (publishStream, publishCont) = AsyncStream.makeStream(of: PublishInfo.self)
+                                        await self.setConnected(publishCont)
+                                        for await publish in publishStream {
                                             do {
                                                 try await connection.publish(
                                                     to: publish.topic,
@@ -232,6 +246,8 @@ struct ServerView: View {
                                                 server.messageContinuation.yield("Failed to publish to \(publish.topic)")
                                             }
                                         }
+                                        await self.setDisconnected()
+                                        logger.info("Finished publish stream")
                                     }
                                     group.addTask {
                                         await connection.waitOnClose()
@@ -246,19 +262,20 @@ struct ServerView: View {
                     }
                 }
                 let subscriptions = Subscriptions()
-                // for each subscription add a new task group
+                // for each subscription add a new child task
                 for try await event in server.subscribeStream {
                     switch event {
                     case .subscribe(let topic):
-                        // verify we aren't already running this subscription
                         let (cancelStream, cancelContinuation) = AsyncStream.makeStream(of: Void.self)
+                        // verify we aren't already running this subscription
                         guard subscriptions.addNewSubscription(topic, cancelContinuation: cancelContinuation) else { continue }
                         group.addTask {
                             defer {
+                                server.messageContinuation.yield("Subscription ended: \(topic)")
                                 subscriptions.removeSubscription(topic)
                             }
                             try await session.subscribe(to: [.init(topicFilter: topic, qos: .exactlyOnce)]) { subscription in
-                                // Create async sequence of subscription stream merged with cancellation sequence
+                                // Merge subscription async sequence with cancellation sequence
                                 enum MergedStreamType {
                                     case publish(MQTTSubscription.Element)
                                     case cancel
@@ -271,7 +288,7 @@ struct ServerView: View {
                                 for try await message in mergedStream {
                                     switch message {
                                     case .publish(let message):
-                                        let subscriptionOutput = "\(topic): \(String(buffer :message.payload))"
+                                        let subscriptionOutput = "\(message.topicName): \(String(buffer :message.payload))"
                                         var output: String
                                         if subscriptionOutput.count > maxPayloadLength {
                                             output = subscriptionOutput.prefix(maxPayloadLength) + "..."

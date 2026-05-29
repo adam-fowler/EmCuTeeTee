@@ -420,7 +420,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/swift-server-community/mqtt-nio";
 			requirement = {
-				branch = "wait-on-close";
+				branch = "clean-start-on-empty-session";
 				kind = branch;
 			};
 		};
