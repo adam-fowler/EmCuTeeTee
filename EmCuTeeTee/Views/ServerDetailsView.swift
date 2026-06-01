@@ -97,7 +97,6 @@ struct ServerDetailsView: View {
                     }
                 }
                 Section {
-                    Toggle("Clean Session", isOn: $settings.cleanSession)
                     NavigationLink (
                         destination: ServerView(
                             serverConfiguration: .init(
@@ -105,7 +104,6 @@ struct ServerDetailsView: View {
                                 hostname: settings.hostname,
                                 port: settings.port,
                                 version: settings.version,
-                                cleanSession: settings.cleanSession,
                                 useTLS: settings.useTLS,
                                 useWebSocket: settings.useWebSocket,
                                 webSocketUrl: settings.webSocketURL,

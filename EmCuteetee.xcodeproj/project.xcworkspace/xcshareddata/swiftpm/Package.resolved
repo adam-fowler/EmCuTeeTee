@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server-community/mqtt-nio",
       "state" : {
-        "branch" : "clean-start-on-empty-session",
-        "revision" : "2077432fe9ca340e7aac3dbf5d777e91f6d68489"
+        "branch" : "v3",
+        "revision" : "07f0d3605be8d045dc693b781be8616c0cd951af"
       }
     },
     {

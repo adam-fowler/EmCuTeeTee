@@ -33,7 +33,6 @@ struct ServerView: View {
         let hostname: String
         let port: Int
         let version: MQTTConnectionConfiguration.Version
-        let cleanSession: Bool
         let useTLS: Bool
         let useWebSocket: Bool
         let webSocketUrl: String
@@ -46,7 +45,9 @@ struct ServerView: View {
             case .v3_1_1:
                 MQTTConnectionConfiguration.VersionConfiguration.v3_1_1()
             case .v5_0:
-                MQTTConnectionConfiguration.VersionConfiguration.v5_0(connectProperties: [.sessionExpiryInterval(60*60)])
+                MQTTConnectionConfiguration.VersionConfiguration.v5_0(
+                    connectProperties: [.sessionExpiryInterval(60*60)]
+                )
             }
             let tls = if self.useTLS {
                 MQTTConnectionConfiguration.TLS.enable(.ts(.init()), tlsServerName: self.hostname)
@@ -254,6 +255,7 @@ struct ServerView: View {
                                         throw MQTTError.connectionClosed
                                     }
                                     try await group.next()!
+                                    connection.close()
                                 }
                             }
                         } catch {
@@ -336,7 +338,6 @@ struct ServerView_Previews: PreviewProvider {
                 hostname: "localhost",
                 port: 1883,
                 version: .v3_1_1,
-                cleanSession: true,
                 useTLS: false,
                 useWebSocket: false,
                 webSocketUrl: "/mqtt",
