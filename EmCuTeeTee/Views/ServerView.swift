@@ -216,6 +216,7 @@ struct ServerView: View {
             try await withThrowingTaskGroup { group in
                 let session = MQTTSession(clientID: server.configuration.identifier, logger: logger)
                 group.addTask {
+                    var backoff = Backoff()
                     while !Task.isCancelled {
                         server.messageContinuation.yield("Connecting...")
                         do {
@@ -228,7 +229,8 @@ struct ServerView: View {
                                 logger: logger
                             ) { connection, sessionPresent in
                                 server.messageContinuation.yield("Connected (\(sessionPresent ? "found session": "new session" ))")
-                                
+                                // reset backoff
+                                backoff.reset()
                                 // publish messages
                                 try await withThrowingTaskGroup { group in
                                     group.addTask {
@@ -261,6 +263,7 @@ struct ServerView: View {
                         } catch {
                             server.messageContinuation.yield("Connection error: \(error)")
                         }
+                        try await backoff.wait()
                     }
                 }
                 let subscriptions = Subscriptions()

@@ -17,6 +17,7 @@
 		D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A02689D52E004DC992 /* PublishView.swift */; };
 		D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2A8268C5CEE004DC992 /* UserSettings.swift */; };
 		D10FB2AC268CB905004DC992 /* BasicTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FB2AB268CB905004DC992 /* BasicTextFieldStyle.swift */; };
+		D1A8CDB32FCD9B3B005862BB /* Backoff.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8CDB22FCD9B3A005862BB /* Backoff.swift */; };
 		D1D845452FC8393C005D745C /* MQTTNIO in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845442FC8393C005D745C /* MQTTNIO */; };
 		D1D845482FC874A3005D745C /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845472FC874A3005D745C /* AsyncAlgorithms */; };
 		D1D8454A2FC874A3005D745C /* AsyncStreaming in Frameworks */ = {isa = PBXBuildFile; productRef = D1D845492FC874A3005D745C /* AsyncStreaming */; };
@@ -36,6 +37,7 @@
 		D10FB2A02689D52E004DC992 /* PublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishView.swift; sourceTree = "<group>"; };
 		D10FB2A8268C5CEE004DC992 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		D10FB2AB268CB905004DC992 /* BasicTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BasicTextFieldStyle.swift; path = EmCuTeeTee/ViewModifiers/BasicTextFieldStyle.swift; sourceTree = SOURCE_ROOT; };
+		D1A8CDB22FCD9B3A005862BB /* Backoff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backoff.swift; sourceTree = "<group>"; };
 		D1D8454C2FC878D7005D745C /* Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscriptions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				D1D8454C2FC878D7005D745C /* Subscriptions.swift */,
+				D1A8CDB22FCD9B3A005862BB /* Backoff.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -197,6 +200,7 @@
 				D10FB2A9268C5CEE004DC992 /* UserSettings.swift in Sources */,
 				D10FB2AC268CB905004DC992 /* BasicTextFieldStyle.swift in Sources */,
 				D1D8454D2FC878E1005D745C /* Subscriptions.swift in Sources */,
+				D1A8CDB32FCD9B3B005862BB /* Backoff.swift in Sources */,
 				D10FB28926887313004DC992 /* ServerDetailsView.swift in Sources */,
 				D10FB28726887313004DC992 /* EmCuTeeTeeApp.swift in Sources */,
 				D10FB2A12689D52E004DC992 /* PublishView.swift in Sources */,
@@ -420,8 +424,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/swift-server-community/mqtt-nio";
 			requirement = {
-				branch = v3;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = "3.0.0-alpha";
 			};
 		};
 		D1D845462FC874A3005D745C /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {

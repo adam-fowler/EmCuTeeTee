@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server-community/mqtt-nio",
       "state" : {
-        "branch" : "v3",
-        "revision" : "07f0d3605be8d045dc693b781be8616c0cd951af"
+        "revision" : "629ccfdb5f493a9c9547db5a07896473d921ae14",
+        "version" : "3.0.0-alpha.1"
       }
     },
     {
