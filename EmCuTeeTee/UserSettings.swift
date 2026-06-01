@@ -17,7 +17,7 @@ class UserSettings: ObservableObject {
     @Published var clientIdentifier: String {
         didSet { UserDefaults.standard.set(self.clientIdentifier, forKey: "clientIdentifier") }
     }
-    @Published var version: MQTTClient.Version {
+    @Published var version: MQTTConnectionConfiguration.Version {
         didSet {
             switch version {
             case .v3_1_1:
@@ -42,17 +42,13 @@ class UserSettings: ObservableObject {
     @Published var username: String {
         didSet { UserDefaults.standard.set(self.username, forKey: "username") }
     }
-    @Published var cleanSession: Bool {
-        didSet { UserDefaults.standard.set(self.cleanSession, forKey: "cleanSession") }
-    }
 
     init() {
         UserDefaults.standard.register(defaults: [
             "port": 1883,
             "version": 0,
             "useWebSocket": false,
-            "authentication": false,
-            "cleanSession": true
+            "authentication": false
         ])
 
         self.hostname = UserDefaults.standard.string(forKey: "hostname") ?? ""
@@ -73,6 +69,5 @@ class UserSettings: ObservableObject {
         self.webSocketURL = UserDefaults.standard.string(forKey: "webSocketURL") ?? "/mqtt"
         self.authentication = UserDefaults.standard.bool(forKey: "authentication")
         self.username = UserDefaults.standard.string(forKey: "username") ?? ""
-        self.cleanSession = UserDefaults.standard.bool(forKey: "cleanSession")
     }
 }

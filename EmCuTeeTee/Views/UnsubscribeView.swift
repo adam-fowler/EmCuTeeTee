@@ -10,7 +10,7 @@ import SwiftUI
 struct UnsubscribeView: View {
     @Binding var showView: Bool
     @Binding var topicName: String
-    let onOk: () -> ()
+    let onOk: (String) -> ()
 
     var body: some View {
         Form {
@@ -28,7 +28,7 @@ struct UnsubscribeView: View {
                 .buttonStyle(BorderlessButtonStyle())
                 Spacer()
                 Button("OK") {
-                    onOk()
+                    onOk(topicName)
                     self.showView = false
                 }
                 .disabled(topicName.count == 0)

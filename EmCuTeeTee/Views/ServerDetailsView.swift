@@ -71,9 +71,7 @@ struct ServerDetailsView: View {
                             Text("5.0").tag(1)
                         }
                     ).pickerStyle(SegmentedPickerStyle())
-                    #if DEBUG // don't release with TLS to avoid US export laws
                     Toggle("TLS", isOn: $settings.useTLS)
-                    #endif
                     Toggle("WebSocket", isOn: $settings.useWebSocket)
                     if settings.useWebSocket {
                         HStack {
@@ -99,15 +97,13 @@ struct ServerDetailsView: View {
                     }
                 }
                 Section {
-                    Toggle("Clean Session", isOn: $settings.cleanSession)
                     NavigationLink (
                         destination: ServerView(
-                            serverDetails: .init(
+                            serverConfiguration: .init(
                                 identifier: settings.clientIdentifier,
                                 hostname: settings.hostname,
                                 port: settings.port,
                                 version: settings.version,
-                                cleanSession: settings.cleanSession,
                                 useTLS: settings.useTLS,
                                 useWebSocket: settings.useWebSocket,
                                 webSocketUrl: settings.webSocketURL,
